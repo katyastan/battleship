@@ -1,17 +1,17 @@
 {
     "compilerOptions": {
-        "target": "ES6",
-        "module": "CommonJS",
-        "outDir": "./dist",
+        "target": "ES2020",
+        "module": "ESNext",
         "strict": true,
         "esModuleInterop": true,
+        "outDir": "./build",
+        "rootDir": "./src",
+        "noImplicitAny": true,
+        "moduleResolution": "Node",
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
+        "allowSyntheticDefaultImports": true
     },
-    "include": [
-        "**/*.ts"
-    ],
-    "exclude": [
-        "../node_modules"
-    ]
+    "include": ["src"],
+    "exclude": ["node_modules"]
 }
