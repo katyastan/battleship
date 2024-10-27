@@ -1,6 +1,6 @@
 import { Room, rooms } from '../models/room';
 import { players } from '../models/player';
-import WebSocket from 'ws';
+import { WebSocket } from 'ws';
 import { Message } from '../types/types';
 import { broadcastMessage, sendMessage } from '../utils/helpers';
 import { initNewGame } from './gameController';
@@ -80,4 +80,3 @@ function startGame(room: Room) {
   message.data.idPlayer = player2Id;
   player2?.ws ? sendMessage(player2.ws, message) : null;
 }
-

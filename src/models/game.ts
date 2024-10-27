@@ -23,4 +23,4 @@ export interface PlayerGameData {
   shotsReceived: { x: number; y: number }[];
 }
 
-export const games = new Map<string, Game>(); // Key: idGame
+export const games = new Map<string, Game>();

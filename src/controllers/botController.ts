@@ -1,4 +1,4 @@
-import WebSocket from 'ws';
+import { WebSocket } from 'ws';
 import { players } from '../models/player';
 import { Player } from '../models/player';
 import { Room } from '../models/room';
@@ -19,7 +19,6 @@ export function handleSinglePlay(ws: WebSocket, clientId: string) {
     return;
   }
 
-  // Create a bot player
   const botClientId = `${BOT_ID_PREFIX}-${botIdCounter++}`;
   const botPlayer = new Player('Bot', '', botClientId, null);
   players.set(botClientId, botPlayer);
@@ -49,10 +48,8 @@ function autoPlaceShips(game: Game, clientId: string) {
 }
 
 function generateRandomShips(): ShipData[] {
-  // For simplicity, return a list of ships with random positions
   const ships: ShipData[] = [];
 
-  // Define ship types and lengths
   const shipDefinitions: ShipDefinition[] = [
     { type: 'huge', length: 4 },
     ...[].concat(...Array(2).fill({ type: 'large', length: 3 })),
@@ -63,7 +60,7 @@ function generateRandomShips(): ShipData[] {
   for (const shipDef of shipDefinitions) {
     let placed = false;
     while (!placed) {
-      const direction = Math.random() < 0.5; // true for horizontal, false for vertical
+      const direction = Math.random() < 0.5;
       const maxPosition = 10 - shipDef.length;
       const x = Math.floor(Math.random() * (direction ? 10 : maxPosition));
       const y = Math.floor(Math.random() * (direction ? maxPosition : 10));
@@ -75,7 +72,6 @@ function generateRandomShips(): ShipData[] {
         type: shipDef.type,
       };
 
-      // Check for overlap with existing ships
       if (!isOverlap(ships, newShip)) {
         ships.push(newShip);
         placed = true;
@@ -103,7 +99,6 @@ function doShipsOverlap(ship1: ShipData, ship2: ShipData): boolean {
       if (cell1.x === cell2.x && cell1.y === cell2.y) {
         return true;
       }
-      // check if neighboring cells are overlapping
       if (Math.abs(cell1.x - cell2.x) <= 1 && Math.abs(cell1.y - cell2.y) <= 1) {
         return true;
       }
@@ -112,32 +107,14 @@ function doShipsOverlap(ship1: ShipData, ship2: ShipData): boolean {
   return false;
 }
 
-// function sendTurnMessage(game: Game) {
-//   const message: Message = {
-//     type: 'turn',
-//     data: {
-//       currentPlayer: game.currentTurn,
-//     },
-//     id: 0,
-//   };
-//   const humanPlayerId = Object.keys(game.players).find((id) => !id.startsWith('bot'));
-//   const humanPlayer = players.get(humanPlayerId!);
-//   if (humanPlayer && humanPlayer.ws) {
-//     sendMessage(humanPlayer.ws, message);
-//   }
-// }
-
 export function botMakeMove(game: Game, botClientId: string) {
   const opponentId = Object.keys(game.players).find((id) => id !== botClientId)!;
   const opponentData = game.players[opponentId];
 
-  // Bot decides where to attack (random for simplicity)
   const { x, y } = generateCoordinatesForAttack(opponentData);
 
-  // Handle the attack
   const result = processAttack(game, botClientId, x, y);
 
-  // Send 'attack' message to the human player
   const attackMessage: Message = {
     type: 'attack',
     data: {
@@ -152,7 +129,6 @@ export function botMakeMove(game: Game, botClientId: string) {
     sendMessage(humanPlayer.ws, attackMessage);
   }
 
-  // Check for game over
   if (result.gameOver) {
     sendFinishMessage(game, botClientId);
     updatePlayerWin(botClientId);
@@ -176,7 +152,6 @@ function processAttack(game: Game, attackerId: string, x: number, y: number): { 
   const opponentId = Object.keys(game.players).find((id) => id !== attackerId)!;
   const opponentData = game.players[opponentId];
 
-  // Check if the attack hits any ship
   const hitShip = opponentData.ships.find((ship) => {
     return shipContainsCoordinate(ship, x, y);
   });
@@ -186,12 +161,10 @@ function processAttack(game: Game, attackerId: string, x: number, y: number): { 
     if (!opponentData.shotsReceived.some((shot) => shot.x === x && shot.y === y)) {
       opponentData.shotsReceived.push({ x, y });
     }
-    // Check if ship is killed
     const isKilled = isShipSunk(hitShip, opponentData.shotsReceived);
     status = isKilled ? 'killed' : 'shot';
   }
 
-  // Check if the opponent has any ships left
   const gameOver = isPlayerDefeated(opponentData);
 
   return { status, gameOver };

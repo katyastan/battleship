@@ -11,4 +11,3 @@ export class Room {
 }
 
 export const rooms = new Map<string, Room>();
-

@@ -1,4 +1,4 @@
-import WebSocket from 'ws';
+import { WebSocket } from 'ws';
 import { Message } from '../types/types';
 import { handleRegistration } from '../controllers/playerController';
 import { handleCreateRoom, handleAddUserToRoom } from '../controllers/roomController';
@@ -39,4 +39,3 @@ export function handleMessage(ws: WebSocket, message: string, clientId: string) 
     sendError(ws, 'Invalid message format');
   }
 }
-

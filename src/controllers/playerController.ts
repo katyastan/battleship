@@ -1,5 +1,5 @@
 import { Player, players } from '../models/player';
-import WebSocket from 'ws';
+import { WebSocket } from 'ws';
 import { sendMessage } from '../utils/helpers';
 
 export function handleRegistration(ws: WebSocket, data: any, clientId: string) {

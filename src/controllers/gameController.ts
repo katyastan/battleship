@@ -1,8 +1,8 @@
 import { games, Game } from '../models/game';
 import { players } from '../models/player';
-import WebSocket from 'ws';
+import { WebSocket } from 'ws';
 import { Message } from '../types/types';
-import { broadcastGameMessage, broadcastMessage, isPlayerDefeated, isShipSunk, sendMessage, shipContainsCoordinate, updatePlayerWin } from '../utils/helpers';
+import { broadcastGameMessage, isPlayerDefeated, isShipSunk, sendMessage, shipContainsCoordinate, updatePlayerWin } from '../utils/helpers';
 import { BOT_ID_PREFIX, botMakeMove } from './botController';
 
 
@@ -32,8 +32,6 @@ export function handleAddShips(ws: WebSocket, data: any) {
     }
   } else {
     console.log('Game not found or player not in game');
-    // Handle error
-
   }
 }
 

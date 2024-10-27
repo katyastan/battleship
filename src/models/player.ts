@@ -1,4 +1,4 @@
-import WebSocket from 'ws';
+import { WebSocket } from 'ws';
 
 export class Player {
   name: string;
@@ -16,4 +16,4 @@ export class Player {
   }
 }
 
-export const players = new Map<string, Player>(); // Key: clientId
+export const players = new Map<string, Player>();
