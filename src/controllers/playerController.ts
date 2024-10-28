@@ -1,6 +1,7 @@
 import { Player, players } from "../models/player";
 import { WebSocket } from "ws";
 import { sendMessage } from "../utils/helpers";
+import { clients as activeConnectedClients } from "../server/webSocketServer";
 
 export function handleRegistration(ws: WebSocket, data: any, clientId: string) {
   const { name, password } = JSON.parse(data);
@@ -20,6 +21,21 @@ export function handleRegistration(ws: WebSocket, data: any, clientId: string) {
         id: 0,
       });
       return;
+    }
+    
+    if (activeConnectedClients.has(player.clientId)) {
+      console.log("Player already connected");
+      sendMessage(ws, {
+        type: "reg",
+        data: {
+          name,
+          index: clientId,
+          error: true,
+          errorText: "User already connected",
+        },
+        id: 0,
+      });
+      return
     }
     player.ws = ws;
     player.clientId = clientId;

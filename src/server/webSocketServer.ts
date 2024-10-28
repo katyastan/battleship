@@ -2,7 +2,7 @@ import { WebSocketServer, WebSocket } from 'ws';
 import { handleMessage } from './messageHandler';
 import { IncomingMessage } from 'http';
 
-const clients = new Map<string, WebSocket>();
+export const clients = new Map<string, WebSocket>();
 let clientIdCounter = 0; 
 
 
