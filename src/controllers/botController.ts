@@ -5,7 +5,7 @@ import { Room } from '../models/room';
 import { Game, PlayerGameData } from '../models/game';
 import { Message } from '../types/types';
 import { ShipData, ShipDefinition } from '../types/types';
-import { getShipCells, isPlayerDefeated, isShipSunk, sendError, sendMessage, shipContainsCoordinate, updatePlayerWin } from '../utils/helpers';
+import { getShipCells, getSurroundingCellsForShip, isPlayerDefeated, isShipSunk, sendError, sendMessage, shipContainsCoordinate, updatePlayerWin } from '../utils/helpers';
 import { initNewRoom } from './roomController';
 import { initNewGame, sendTurnMessage } from './gameController';
 
@@ -132,7 +132,7 @@ export function botMakeMove(game: Game, botClientId: string) {
   if (result.gameOver) {
     sendFinishMessage(game, botClientId);
     updatePlayerWin(botClientId);
-  } if (result.status === 'miss') {
+  } else if (result.status === 'miss') {
     game.currentTurn = opponentId;
   }
 
@@ -161,10 +161,40 @@ function processAttack(game: Game, attackerId: string, x: number, y: number): { 
     if (!opponentData.shotsReceived.some((shot) => shot.x === x && shot.y === y)) {
       opponentData.shotsReceived.push({ x, y });
     }
+
     const isKilled = isShipSunk(hitShip, opponentData.shotsReceived);
     status = isKilled ? 'killed' : 'shot';
-  }
 
+    if (isKilled) {
+      const surroundingCells = getSurroundingCellsForShip(hitShip);
+
+      for (const cell of surroundingCells) {
+        if (
+          !opponentData.shotsReceived.some(
+            (shot) => shot.x === cell.x && shot.y === cell.y
+          ) &&
+          !opponentData.ships.some((ship) =>
+            shipContainsCoordinate(ship, cell.x, cell.y)
+          )
+        ) {
+          opponentData.shotsReceived.push(cell);
+          const missMessage: Message = {
+            type: 'attack',
+            data: {
+              position: cell,
+              currentPlayer: attackerId,
+              status: 'miss',
+            },
+            id: 0,
+          };
+          const humanPlayer = players.get(opponentId);
+          if (humanPlayer && humanPlayer.ws) {
+            sendMessage(humanPlayer.ws, missMessage);
+          }
+        }
+      }
+    }
+  }
   const gameOver = isPlayerDefeated(opponentData);
 
   return { status, gameOver };
