@@ -110,11 +110,11 @@ export function sendTurnMessage(game: Game) {
     },
     id: 0,
   };
+  broadcastGameMessage(game, message);
   if (game.currentTurn.startsWith(`${BOT_ID_PREFIX}-`)) {
     setTimeout(() => botMakeMove(game, game.currentTurn), 1100);
   } else {
     startTurnTimer(game);
-    broadcastGameMessage(game, message);
   }
 }
 
