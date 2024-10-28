@@ -13,7 +13,8 @@ import {
   getRandomCoordinate,
 } from "../utils/helpers";
 import { TURN_TIME_LIMIT, gameTimers } from "../utils/constants";
-import { BOT_ID_PREFIX, botMakeMove } from "./botController";
+import { botMakeMove } from "./botController";
+import { BOT_ID_PREFIX } from "../utils/constants";
 
 export function initNewGame(playerIds: string[]): Game {
   const lastGameId =
@@ -110,6 +111,7 @@ export function sendTurnMessage(game: Game) {
     },
     id: 0,
   };
+
   broadcastGameMessage(game, message);
   if (game.currentTurn.startsWith(`${BOT_ID_PREFIX}-`)) {
     setTimeout(() => botMakeMove(game, game.currentTurn), 1100);

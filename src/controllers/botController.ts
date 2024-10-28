@@ -8,9 +8,9 @@ import { ShipData, ShipDefinition } from '../types/types';
 import { getShipCells, getSurroundingCellsForShip, isPlayerDefeated, isShipSunk, sendError, sendMessage, shipContainsCoordinate, updatePlayerWin } from '../utils/helpers';
 import { initNewRoom } from './roomController';
 import { initNewGame, sendTurnMessage } from './gameController';
+import { BOT_ID_PREFIX } from '../utils/constants';
 
 let botIdCounter = 0;
-export const BOT_ID_PREFIX = '__bot-';
 
 export function handleSinglePlay(ws: WebSocket, clientId: string) {
   const humanPlayer = players.get(clientId);
@@ -110,9 +110,7 @@ function doShipsOverlap(ship1: ShipData, ship2: ShipData): boolean {
 export function botMakeMove(game: Game, botClientId: string) {
   const opponentId = Object.keys(game.players).find((id) => id !== botClientId)!;
   const opponentData = game.players[opponentId];
-
   const { x, y } = generateCoordinatesForAttack(opponentData);
-
   const result = processAttack(game, botClientId, x, y);
 
   const attackMessage: Message = {
@@ -217,3 +215,5 @@ function sendFinishMessage(game: Game, winnerId: string) {
     sendMessage(humanPlayer.ws, message);
   }
 }
+export { BOT_ID_PREFIX };
+

@@ -1,4 +1,4 @@
-import { WebSocket } from 'ws';
+import { WebSocket } from "ws";
 
 export class Player {
   name: string;
@@ -7,7 +7,12 @@ export class Player {
   clientId: string;
   ws: WebSocket | null;
 
-  constructor(name: string, password: string, clientId: string, ws: WebSocket | null) {
+  constructor(
+    name: string,
+    password: string,
+    clientId: string,
+    ws: WebSocket | null
+  ) {
     this.name = name;
     this.password = password;
     this.wins = 0;
