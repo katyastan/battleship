@@ -132,8 +132,11 @@ export function botMakeMove(game: Game, botClientId: string) {
   if (result.gameOver) {
     sendFinishMessage(game, botClientId);
     updatePlayerWin(botClientId);
+    return;
   } else if (result.status === 'miss') {
     game.currentTurn = opponentId;
+  } else {
+    game.currentTurn = botClientId;
   }
 
   sendTurnMessage(game);
