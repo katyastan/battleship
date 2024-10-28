@@ -109,3 +109,7 @@ export function getSurroundingCellsForShip(ship: ShipData) {
   }
   return surroundingCells;
 }
+
+export function getRandomCoordinate() {
+  return Math.floor(Math.random() * 10);
+}
