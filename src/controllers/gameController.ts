@@ -2,7 +2,7 @@ import { games, Game } from '../models/game';
 import { players } from '../models/player';
 import { WebSocket } from 'ws';
 import { Message } from '../types/types';
-import { broadcastGameMessage, isPlayerDefeated, isShipSunk, sendMessage, shipContainsCoordinate, updatePlayerWin } from '../utils/helpers';
+import { broadcastGameMessage, isPlayerDefeated, isShipSunk, sendMessage, shipContainsCoordinate, updatePlayerWin, getSurroundingCellsForShip } from '../utils/helpers';
 import { BOT_ID_PREFIX, botMakeMove } from './botController';
 
 
@@ -83,6 +83,30 @@ export function handleAttack(ws: WebSocket, data: any) {
       const isKilled = isShipSunk(hitShip, opponentData.shotsReceived);
       status = isKilled ? 'killed' : 'shot';
 
+      if (isKilled) {
+        const surroundingCells = getSurroundingCellsForShip(hitShip);
+        surroundingCells.forEach((cell) => {
+          if (
+            cell.x >= 0 &&
+            cell.y >= 0 &&
+            !opponentData.shotsReceived.some((shot) => shot.x === cell.x && shot.y === cell.y) &&
+            !opponentData.ships.some((ship) => shipContainsCoordinate(ship, cell.x, cell.y))
+          ) {
+            opponentData.shotsReceived.push(cell);
+            const missMessage: Message = {
+              type: 'attack',
+              data: {
+                position: { x: cell.x, y: cell.y },
+                currentPlayer: indexPlayer,
+                status: 'miss',
+              },
+              id: 0,
+            };
+            broadcastGameMessage(game, missMessage);
+          }
+        });
+      }
+
       if (isPlayerDefeated(opponentData)) {
         sendFinishMessage(game, indexPlayer);
         updatePlayerWin(indexPlayer);
@@ -107,7 +131,7 @@ export function handleAttack(ws: WebSocket, data: any) {
     }
     sendTurnMessage(game);
   } else {
-    // Handle invalid turn or game not found
+    console.log('Invalid turn or game not found');
   }
 }
 
